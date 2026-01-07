@@ -1,10 +1,9 @@
-from sklearn.metrics.pairwise import cosine_similarity
-import torch
-import gradio as gr
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import pickle
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+import torch
 
 app = Flask(__name__)
 CORS(app)
@@ -78,26 +77,10 @@ def grammar_predict():
         "corrected_text": corrected
     })
 
-# Gradio interface
-iface = gr.Blocks()
-
-with iface:
-    gr.Markdown("## AI Text Assistant")
-    with gr.Tab("Spam Detector"):
-        spam_input = gr.Textbox(label="Enter text")
-        spam_output = gr.Textbox(label="Prediction")
-        gr.Button("Check Spam").click(fn=predict_spam, inputs=spam_input, outputs=spam_output)
-    with gr.Tab("Grammar Corrector"):
-        grammar_input = gr.Textbox(label="Enter sentence")
-        grammar_output = gr.Textbox(label="Corrected Sentence")
-        gr.Button("Check Grammar").click(fn=grammar_predict, inputs=grammar_input, outputs=grammar_output)
-
-iface.launch()
-
 
 
 if __name__ == "__main__":
     import os
-    port = int(os.environ.get("PORT", 7860))
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
 
