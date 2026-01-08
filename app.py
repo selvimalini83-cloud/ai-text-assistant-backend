@@ -72,9 +72,10 @@ def grammar_predict():
 
     if not text:
         return jsonify({"corrected_text": "⚠️ Please enter text"})
-        grammar_model = get_grammar_model()
-        result = grammar_model(text, max_new_tokens=64)
-        corrected = result[0]["generated_text"]
+
+    grammar_corrector = get_grammar_model()
+    result = grammar_corrector(text, max_new_tokens=64)
+    corrected = result[0]["generated_text"]
 
     return jsonify({"corrected_text": corrected})
 
