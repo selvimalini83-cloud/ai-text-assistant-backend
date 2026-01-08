@@ -19,11 +19,18 @@ with open("ml_models/spam/vectorizer.pkl", "rb") as f:
     spam_vectorizer = pickle.load(f)
 
 # ------------------ LOAD GRAMMAR MODELS ------------------
-grammar_corrector = pipeline(
-    "text2text-generation",
-    model="prithivida/grammar_error_correcter_v1",
-    tokenizer="prithivida/grammar_error_correcter_v1"
-)
+grammar_corrector = None
+
+def get_grammar_model():
+    global grammar_corrector
+    if grammar_corrector is None:
+        grammar_corrector = pipeline(
+            "text2text-generation",
+            model="prithivida/grammar_error_correcter_v1",
+            tokenizer="prithivida/grammar_error_correcter_v1"
+        )
+    return grammar_corrector
+
 
 grammar_df = pd.read_csv("ml_models/grammar/grammar_dataset.csv")
 
@@ -65,9 +72,9 @@ def grammar_predict():
 
     if not text:
         return jsonify({"corrected_text": "⚠️ Please enter text"})
-
-    result = grammar_corrector(text, max_new_tokens=64)
-    corrected = result[0]["generated_text"]
+        grammar_model = get_grammar_model()
+        result = grammar_model(text, max_new_tokens=64)
+        corrected = result[0]["generated_text"]
 
     return jsonify({"corrected_text": corrected})
 
