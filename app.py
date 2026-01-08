@@ -2,8 +2,18 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import pickle
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
-import torch
+from transformers import pipeline
+from model import load_model
+
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        model = load_model()
+    return model
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -15,7 +25,7 @@ with open("ml_models/spam/spam_model.pkl", "rb") as f:
 with open("ml_models/spam/vectorizer.pkl", "rb") as f:
     spam_vectorizer = pickle.load(f)
 # for grammar
-from transformers import pipeline
+
 
 grammar_corrector = pipeline(
     "text2text-generation",
@@ -46,6 +56,7 @@ def static_files(path):
 # ===== Spam Prediction API =====
 @app.route("/predict-spam", methods=["POST"])
 def predict_spam():
+     model = get_model()
     data = request.get_json()
     text = data.get("text", "")
 
@@ -62,6 +73,7 @@ def predict_spam():
 # -------- GRAMMAR API --------
 @app.route("/grammar", methods=["POST"])
 def grammar_predict():
+     model = get_model()
     data = request.get_json()
     text = data.get("text", "").strip()
 
@@ -78,9 +90,9 @@ def grammar_predict():
     })
 
 
-
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 5000))
+    )
 
