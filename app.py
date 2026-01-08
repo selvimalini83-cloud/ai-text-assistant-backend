@@ -2,49 +2,38 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import pickle
 import pandas as pd
+import os
 from transformers import pipeline
-from model import load_model
 
-model = None
-
-def get_model():
-    global model
-    if model is None:
-        model = load_model()
-    return model
-
-
-
+# ------------------ APP SETUP ------------------
 app = Flask(__name__)
 CORS(app)
 
-# ===== Load Spam Model =====
+
+
+# ------------------ LOAD SPAM MODEL ------------------
 with open("ml_models/spam/spam_model.pkl", "rb") as f:
     spam_model = pickle.load(f)
 
 with open("ml_models/spam/vectorizer.pkl", "rb") as f:
     spam_vectorizer = pickle.load(f)
-# for grammar
 
-
+# ------------------ LOAD GRAMMAR MODELS ------------------
 grammar_corrector = pipeline(
     "text2text-generation",
     model="prithivida/grammar_error_correcter_v1",
     tokenizer="prithivida/grammar_error_correcter_v1"
 )
 
-# Load grammar data
 grammar_df = pd.read_csv("ml_models/grammar/grammar_dataset.csv")
 
-# Load vectorizer
 with open("ml_models/grammar/grammar_vectorizer.pkl", "rb") as f:
     grammar_vectorizer = pickle.load(f)
 
-# Load NearestNeighbors model
 with open("ml_models/grammar/grammar_model.pkl", "rb") as f:
     grammar_model = pickle.load(f)
 
-# ===== Serve Frontend Files =====
+# ------------------ FRONTEND ------------------
 @app.route("/")
 def index():
     return send_from_directory("frontend", "index.html")
@@ -53,14 +42,13 @@ def index():
 def static_files(path):
     return send_from_directory("frontend", path)
 
-# ===== Spam Prediction API =====
+# ------------------ SPAM API ------------------
 @app.route("/predict-spam", methods=["POST"])
 def predict_spam():
-     model = get_model()
     data = request.get_json()
-    text = data.get("text", "")
+    text = data.get("text", "").strip()
 
-    if text.strip() == "":
+    if not text:
         return jsonify({"prediction": "Please enter text ⚠️"})
 
     vector = spam_vectorizer.transform([text])
@@ -69,30 +57,23 @@ def predict_spam():
     prediction = "Spam 🚫" if int(result) == 1 else "Not Spam ✅"
     return jsonify({"prediction": prediction})
 
-
-# -------- GRAMMAR API --------
+# ------------------ GRAMMAR API ------------------
 @app.route("/grammar", methods=["POST"])
 def grammar_predict():
-     model = get_model()
     data = request.get_json()
     text = data.get("text", "").strip()
 
     if not text:
         return jsonify({"corrected_text": "⚠️ Please enter text"})
 
-    # 👉 If you are using TRANSFORMERS grammar corrector
     result = grammar_corrector(text, max_new_tokens=64)
-
     corrected = result[0]["generated_text"]
 
-    return jsonify({
-        "corrected_text": corrected
-    })
+    return jsonify({"corrected_text": corrected})
 
-
+# ------------------ RUN APP ------------------
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(os.environ.get("PORT", 5000))
     )
-
