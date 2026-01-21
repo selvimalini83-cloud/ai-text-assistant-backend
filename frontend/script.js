@@ -1,3 +1,4 @@
+const BACKEND_URL = "https://ai-text-assistant.onrender.com";
 
 const ocean = document.querySelector(".ocean");
 
@@ -20,7 +21,7 @@ async function processText() {
   try {
     // 🔴 SPAM
     if (task.value === "spam") {
-      const response = await fetch("http://127.0.0.1:5000/predict-spam", {
+      const response = await fetch(BACKEND_URL + "/predict-spam", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
@@ -34,7 +35,7 @@ async function processText() {
 
     // 🟢 GRAMMAR
     else if (task.value === "grammar") {
-      const response = await fetch("http://127.0.0.1:5000/grammar", {
+      const response = await fetch(BACKEND_URL + "/grammar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),

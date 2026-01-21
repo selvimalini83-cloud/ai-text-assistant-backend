@@ -42,8 +42,9 @@ with open("ml_models/grammar/grammar_model.pkl", "rb") as f:
 
 # ------------------ FRONTEND ------------------
 @app.route("/")
-def index():
-    return send_from_directory("frontend", "index.html")
+def home():
+    return "Backend is live"
+
 
 @app.route("/<path:path>")
 def static_files(path):
