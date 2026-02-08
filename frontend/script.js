@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://ai-text-assistant.onrender.com";
+const BACKEND_URL = "https://ai-text-assistant-backend.onrender.com";
 
 const ocean = document.querySelector(".ocean");
 
@@ -45,7 +45,7 @@ async function processText() {
       console.log("Grammar API response:", data);
 
       output.innerText =
-        "✅ Corrected Sentence:\n" + data.corrected_text;
+        "✅ Corrected Sentence:\n" + data.corrected;
     }
 
   } catch (error) {

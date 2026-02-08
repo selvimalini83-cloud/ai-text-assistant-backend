@@ -7,8 +7,7 @@ from transformers import pipeline
 
 # ------------------ APP SETUP ------------------
 app = Flask(__name__)
-CORS(app)
-
+CORS(app, origins=["https://ai-text-assistant-client.vercel.app"])
 
 
 # ------------------ LOAD SPAM MODEL ------------------
@@ -73,7 +72,7 @@ def grammar():
     result = grammar_corrector(text, max_new_tokens=64)
     corrected = result[0]["generated_text"]
 
-    return jsonify({"corrected_text": corrected})
+    return jsonify({"corrected": corrected})
 
 # ------------------ RUN APP ------------------
 if __name__ == "__main__":
