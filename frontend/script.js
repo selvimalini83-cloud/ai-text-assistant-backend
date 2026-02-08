@@ -45,7 +45,7 @@ async function processText() {
       console.log("Grammar API response:", data);
 
       output.innerText =
-        "✅ Corrected Sentence:\n" + data.corrected;
+        "✅ Corrected Sentence:\n" + data.corrected_text;
     }
 
   } catch (error) {

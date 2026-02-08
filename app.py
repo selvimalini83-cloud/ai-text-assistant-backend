@@ -10,6 +10,7 @@ app = Flask(__name__)
 CORS(app, origins=["https://ai-text-assistant-client.vercel.app"])
 
 
+
 # ------------------ LOAD SPAM MODEL ------------------
 with open("ml_models/spam/spam_model.pkl", "rb") as f:
     spam_model = pickle.load(f)
@@ -72,7 +73,7 @@ def grammar():
     result = grammar_corrector(text, max_new_tokens=64)
     corrected = result[0]["generated_text"]
 
-    return jsonify({"corrected": corrected})
+    return jsonify({"corrected_text": corrected})
 
 # ------------------ RUN APP ------------------
 if __name__ == "__main__":
