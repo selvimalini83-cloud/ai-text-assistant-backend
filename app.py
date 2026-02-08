@@ -24,7 +24,8 @@ grammar_corrector = None
 def get_grammar_model():
     global grammar_corrector
     if grammar_corrector is None:
-        grammar_corrector = pipeline("text-generation",
+        grammar_corrector = pipeline(
+            "text2text-generation",
             model="prithivida/grammar_error_correcter_v1",
             tokenizer="prithivida/grammar_error_correcter_v1"
         )
