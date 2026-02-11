@@ -198,7 +198,7 @@ Convert application into full AI writing assistant platform
 
 👩‍💻 Author
 
-Selvi Malini
+Selvi D
 BCA Graduate | Aspiring Full Stack & AI Developer
 
 ⭐ Skills Demonstrated
